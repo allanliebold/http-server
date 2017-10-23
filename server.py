@@ -1,8 +1,15 @@
+"""Create a server socket to recieve a message from a client.
+
+And send back a response.
+"""
+
 import sys
 import socket
 
+
 def server():
-    server = socket.socket(socket.AF_INET, 
+    """Build a server to receive from client and respond."""
+    server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
     address = ('127.0.0.1', 6666)
@@ -19,6 +26,5 @@ def server():
         if len(part) < buffer_length:
             break
     print (whole_msg)
-
     response = "Darn that stupid lazy dog!"
     conn.sendall(response.encode('utf8'))

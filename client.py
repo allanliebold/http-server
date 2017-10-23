@@ -1,10 +1,14 @@
+"""Create a client socket to interact with a server socket."""
+
+
 import sys
 import socket
 
-
 message = "The quick brown fox jumps over the lazy dog."
 
+
 def client(message):
+    """Instantiate a client socket that sends a message."""
     infos = socket.getaddrinfo('127.0.0.1', 6666)
     stream_info = [i for i in infos if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
@@ -14,7 +18,7 @@ def client(message):
     reply_complete = False
     whole_resp = ''
     while not reply_complete:
-        part = conn.recv(buffer_length)
+        part = client.recv(buffer_length)
         whole_resp += part.decode('utf8')
         if len(part) < buffer_length:
             break
