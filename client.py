@@ -14,7 +14,7 @@ def client(message):
     reply_complete = False
     whole_resp = ''
     while not reply_complete:
-        part = conn.recv(buffer_length)
+        part = client.recv(buffer_length)
         whole_resp += part.decode('utf8')
         if len(part) < buffer_length:
             break
