@@ -1,6 +1,8 @@
 import sys
+import socket
 
 def client(message):
+
     pass
 
 
