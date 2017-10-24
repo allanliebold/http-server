@@ -28,7 +28,3 @@ def client(message):
 if __name__ == "__main__":
     """Run client function passing sys.argv as a mesage."""
     client(sys.argv[1])
-
-
-# ɸ
-# b'\xc9\xb8

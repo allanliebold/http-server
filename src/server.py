@@ -27,8 +27,6 @@ def server():
                 whole_msg += part.decode('utf8')
                 if len(part) < buffer_length:
                     break
-                elif part[-4:] == "1111":
-                    break
             print(whole_msg)
             response = "Server received message"
             conn.sendall(response.encode('utf8'))
