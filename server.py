@@ -16,7 +16,6 @@ def server():
     server.bind(address)
     server.listen(1)
     conn, addr = server.accept()
-    print(conn.recv(8).decode('utf8'))
     buffer_length = 8
     message_complete = False
     whole_msg = ''
