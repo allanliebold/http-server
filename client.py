@@ -22,7 +22,7 @@ def client(message):
         whole_resp += part.decode('utf8')
         if len(part) < buffer_length:
             break
-    print (whole_resp)
+    print(whole_resp)
     client.close()
 
 if __name__ == "__main__":
