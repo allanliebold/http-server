@@ -13,7 +13,7 @@ def server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 6665)
+    address = ('127.0.0.1', 6667)
     server.bind(address)
     server.listen(1)
     listening = True
@@ -25,12 +25,11 @@ def server():
             whole_msg = ''
             while not message_complete:
                 part = conn.recv(buffer_length)
-                whole_msg += part.decode('utf8')
+                whole_msg += part.decode('utf-8')
                 if whole_msg[-3:] == '@@@':
                     break
             print(whole_msg[:-3])
-            response = 'Server received message'
-            conn.sendall(response.encode('utf8'))
+            conn.sendall(whole_msg.encode('utf-8'))
             conn.close()
     except KeyboardInterrupt:
             conn.close()

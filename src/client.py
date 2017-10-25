@@ -8,7 +8,7 @@ import socket
 
 def client(message):
     """Instantiate a client socket that sends a message."""
-    infos = socket.getaddrinfo('127.0.0.1', 6665)
+    infos = socket.getaddrinfo('127.0.0.1', 6667)
     stream_info = [i for i in infos if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     client.connect(stream_info[-1])
@@ -26,7 +26,7 @@ def client(message):
         if len(part) < buffer_length:
             break
     print(whole_resp)
-    return whole_resp
+    return whole_resp[:-3]
 
 if __name__ == "__main__":
     """Run client function passing sys.argv as a mesage."""
