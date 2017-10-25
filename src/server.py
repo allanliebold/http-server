@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Create a server socket to recieve a message from a client.
 
 And send back a response.
@@ -8,7 +9,7 @@ import socket
 
 
 def server():
-    """Build a server to receive from client and respond."""
+    """Build a server to rece/ive from client and respond."""
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
