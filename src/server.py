@@ -26,11 +26,9 @@ def server():
             while not message_complete:
                 part = conn.recv(buffer_length)
                 whole_msg += part.decode('utf8')
-                if len(part) < buffer_length:
+                if whole_msg[-3:] == '@@@':
                     break
-                elif part[-1:] == '\xb8':
-                    break
-            print(whole_msg[:-1])
+            print(whole_msg[:-3])
             response = 'Server received message'
             conn.sendall(response.encode('utf8'))
             conn.close()
