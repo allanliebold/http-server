@@ -2,8 +2,8 @@
 """Setup test functions.
 
 To verify proper operation of server and client sockets.
-
 """
+from __future__ import unicode_literals
 
 
 def test_client():
@@ -65,4 +65,4 @@ def test_messages_7():
 def test_messages_with_non_ascii_chars():
     """Test that non ascii chars are returned as sent."""
     from client import client
-    assert client("Œš™- word yo!") == "Œš™- word yo!"
+    assert client(u"Œš™- word yo!") == u"Œš™- word yo!"
