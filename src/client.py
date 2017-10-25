@@ -8,12 +8,15 @@ import socket
 
 def client(message):
     """Instantiate a client socket that sends a message."""
-    message += u'\xb8'
-    infos = socket.getaddrinfo('127.0.0.1', 6666)
+    infos = socket.getaddrinfo('127.0.0.1', 6665)
     stream_info = [i for i in infos if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     client.connect(stream_info[-1])
-    client.sendall(message.encode('utf8'))
+    message += u'\xb8'
+    if hasattr('', 'encode'):
+        client.sendall(message.encode('utf8'))
+    else:
+        client.sendall(message)
     buffer_length = 8
     reply_complete = False
     whole_resp = ''

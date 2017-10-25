@@ -13,12 +13,12 @@ def server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 6666)
+    address = ('127.0.0.1', 6665)
     server.bind(address)
     server.listen(1)
     listening = True
-    while listening:
-        try:
+    try:
+        while listening:
             conn, addr = server.accept()
             buffer_length = 8
             message_complete = False
@@ -34,9 +34,10 @@ def server():
             response = 'Server received message'
             conn.sendall(response.encode('utf8'))
             conn.close()
-        except KeyboardInterrupt:
+    except KeyboardInterrupt:
             conn.close()
             server.close()
+            print('Server closed')
             sys.exit()
 
 if __name__ == "__main__":
