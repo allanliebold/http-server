@@ -29,7 +29,8 @@ def server():
                 if whole_msg[-3:] == '@@@':
                     break
             print(whole_msg[:-3])
-            conn.sendall(whole_msg.encode('utf-8'))
+            conn.sendall(response_ok())
+            # conn.sendall(whole_msg.encode('utf-8'))
             conn.close()
     except KeyboardInterrupt:
             conn.close()
@@ -39,10 +40,13 @@ def server():
 
 
 def response_ok():
-    return message
+    """Return a well formed HTTP 200 response."""
+    return b"HTTP/1.1 200\nOK\r\n"
 
-def response_error ():
-    return message
+
+def response_error():
+    """Return a well formed HTTP 500 server error."""
+    return b"HTTP/1.1 500\nInternal Server Error\r\n"
 
 
 if __name__ == "__main__":
