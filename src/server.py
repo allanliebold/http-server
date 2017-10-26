@@ -37,6 +37,14 @@ def server():
             print('Server closed')
             sys.exit()
 
+
+def response_ok():
+    return message
+
+def response_error ():
+    return message
+
+
 if __name__ == "__main__":
     """Run server."""
     server()
