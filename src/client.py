@@ -26,7 +26,7 @@ def client(message):
         if len(part) < buffer_length:
             break
     print(whole_resp)
-    return whole_resp[:-3]
+    return whole_resp
 
 if __name__ == "__main__":
     """Run client function passing sys.argv as a mesage."""
