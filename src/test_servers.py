@@ -9,13 +9,15 @@ from __future__ import unicode_literals
 def test_client():
     """Test the client socket setup."""
     from client import client
-    assert client("Send this") == "Send this"
+    from server import response_ok
+    assert client("Send this") == response_ok()
 
 
 def test_messages_shorter_than_one_buffer():
     """Test if message is shorter than buffer, still works."""
     from client import client
-    assert client('hi') == "hi"
+    from server import response_ok
+    assert client('hi') == response_ok()
 
 
 def test_messages_longer_than_one_buffer_length():
@@ -23,46 +25,54 @@ def test_messages_longer_than_one_buffer_length():
     long_message = "This is a super long message that is way longer than \
         the default buffer length"
     from client import client
-    assert client(long_message) == long_message
+    from server import response_ok
+    assert client(long_message) == response_ok()
 
 
 def test_messages_exact_multiplier_of_buffer():
     """Test messages that are exact buffer size multiples work."""
     from client import client
-    assert client("12345678") == "12345678"
+    from server import response_ok
+    assert client("12345678") == response_ok()
 
 
 def test_messages_1():
-    """Test that when sending "1" we get back "1"."""
+    """Test that when sending "1" we get back a 200 OK response."""
     from client import client
-    assert client("1") == "1"
+    from server import response_ok
+    assert client("1") == response_ok()
 
 
 def test_messages_2():
-    """Test that when sending "12" we get back "12"."""
+    """Test that when sending "12" we get back a 200 OK response."""
     from client import client
-    assert client("12") == "12"
+    from server import response_ok
+    assert client("12") == response_ok()
 
 
 def test_messages_3():
-    """Test that when sending "123" we get back "123"."""
+    """Test that when sending "123" we get back a 200 OK response."""
     from client import client
-    assert client("123") == "123"
+    from server import response_ok
+    assert client("123") == response_ok()
 
 
 def test_messages_6():
-    """Test that when sending "123456" we get back "123456"."""
+    """Test that when sending "123456" we get back a 200 OK response."""
     from client import client
-    assert client("123456") == "123456"
+    from server import response_ok
+    assert client("123456") == response_ok()
 
 
 def test_messages_7():
-    """Test that when sending "1234567" we get back "1234567"."""
+    """Test that when sending "1234567" we get back a 200 OK response."""
     from client import client
-    assert client("1234567") == "1234567"
+    from server import response_ok
+    assert client("1234567") == response_ok()
 
 
 def test_messages_with_non_ascii_chars():
-    """Test that non ascii chars are returned as sent."""
+    """Test that non ascii chars are sent and get a 200 OK response."""
     from client import client
-    assert client(u"Œš™- word yo!") == u"Œš™- word yo!"
+    from server import response_ok
+    assert client(u"Œš™- word yo!") == response_ok()
