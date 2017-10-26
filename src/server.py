@@ -39,15 +39,39 @@ def server():
             sys.exit()
 
 
+def parse_response(request):
+    """Parse Response function.
+
+    If passed a well-formed HTTP/1.1 GET request, return the request URI.
+    Otherwise, raise the appropriate exception.
+    """
+    if request[:3] != 'GET':
+        return response_error('405')
+
+    if request['HTTP'] != 'HTTP/1.1':
+        return response_error('505')
+
+    """If no errors arise, return the request URI."""
+    return request['URI']
+
+
 def response_ok():
     """Return a well formed HTTP 200 response."""
     return b"HTTP/1.1 200\nOK\r\n"
 
 
-def response_error():
-    """Return a well formed HTTP 500 server error."""
-    return b"HTTP/1.1 500\nInternal Server Error\r\n"
+def response_error(status):
+    """Return a well formed error for the status passed."""
+    if status == '405':
+        msg = b"HTTP/1.1 405\nMethod Not Allowed\r\n"
 
+    if status == '500':
+        msg = b"HTTP/1.1 500\nInternal Server Error\r\n"
+
+    if status == '505':
+        msg = b"HTTP/1.1 505\nHTTP Version Not Supported\r\n"
+
+    return msg
 
 if __name__ == "__main__":
     """Run server."""
