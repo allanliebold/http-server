@@ -29,35 +29,41 @@ def server():
                 if whole_msg[-3:] == '@@@':
                     break
             print(whole_msg[:-3])
-            conn.sendall(response_ok())
-            # conn.sendall(whole_msg.encode('utf-8'))
+            try:
+                parse_request(whole_msg[:-3])
+                conn.sendall(response_ok())
+            except ValueError as message:
+                conn.sendall(response_error(message[0], message[1]))
             conn.close()
     except KeyboardInterrupt:
-            conn.close()
-            server.close()
-            print('Server closed')
-            sys.exit()
+        conn.close()
+        server.close()
+        print('Server closed')
+        sys.exit()
 
 
-def parse_response(request):
+def parse_request(request):
     """Parse Response function.
 
     If passed a well-formed HTTP/1.1 GET request, return the request URI.
     Otherwise, raise the appropriate exception.
     """
-    if request[:3] != 'GET':
-        return response_error('405', 'Method Not Allowed')
+    request_by_crlf = request.split("\r\n")
+    if request_by_crlf[1][:5] is not "Host:":
+        raise ValueError([400, "Missing host header."])
+    elif request[-2:] is not "\r\n" or request.count("\r\n") < 3:
+        raise ValueError([400, "Improperly Formed Request"])
 
-    """
-    If server error condition:        
-        return response_error('500', 'Internal Server Error')
-    """
+    request_list = request.split()
 
-    if request['HTTP'] != 'HTTP/1.1':
-        return response_error('505', 'HTTP Version Not Supported')
+    if request_list[0] is not 'GET':
+        raise ValueError([405, "Method Not Allowed"])
+
+    if request_list[2][:8] is not 'HTTP/1.1':
+        raise ValueError([505, "HTTP Version Not Supported"])
 
     """If no errors arise, return the request URI."""
-    return request['URI']
+    return request_list[1]
 
 
 def response_ok():
@@ -67,7 +73,7 @@ def response_ok():
 
 def response_error(status, reason):
     """Return a well formed error for the status passed."""
-    return b"HTTP/1.1 %s \n %s \r\n" % (status, reason)
+    return b"HTTP/1.1 {} \n {} \r\n".format(status, reason)
 
 if __name__ == "__main__":
     """Run server."""
