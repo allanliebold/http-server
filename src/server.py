@@ -46,10 +46,15 @@ def parse_response(request):
     Otherwise, raise the appropriate exception.
     """
     if request[:3] != 'GET':
-        return response_error('405')
+        return response_error('405', 'Method Not Allowed')
+
+    """
+    If server error condition:        
+        return response_error('500', 'Internal Server Error')
+    """
 
     if request['HTTP'] != 'HTTP/1.1':
-        return response_error('505')
+        return response_error('505', 'HTTP Version Not Supported')
 
     """If no errors arise, return the request URI."""
     return request['URI']
@@ -60,18 +65,9 @@ def response_ok():
     return b"HTTP/1.1 200\nOK\r\n"
 
 
-def response_error(status):
+def response_error(status, reason):
     """Return a well formed error for the status passed."""
-    if status == '405':
-        msg = b"HTTP/1.1 405\nMethod Not Allowed\r\n"
-
-    if status == '500':
-        msg = b"HTTP/1.1 500\nInternal Server Error\r\n"
-
-    if status == '505':
-        msg = b"HTTP/1.1 505\nHTTP Version Not Supported\r\n"
-
-    return msg
+    return b"HTTP/1.1 %s \n %s \r\n" % (status, reason)
 
 if __name__ == "__main__":
     """Run server."""
