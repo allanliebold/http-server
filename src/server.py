@@ -4,6 +4,7 @@
 And send back a response.
 """
 
+from __future__ import unicode_literals
 import sys
 import socket
 
