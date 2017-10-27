@@ -108,3 +108,18 @@ def test_parse_request_missing_host_header():
     req = 'GET /path/to/index.html HTTP/1.1\r\nHost www.mysite1.com:80\r\n\r\n'
     with pytest.raises(ValueError):
         parse_request(req)
+
+
+def test_client_sending_valid_request():
+    """Test 200 ok response when client sends proper request."""
+    from client import client
+    from server import response_ok
+    req = 'GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80\r\n\r\n'
+    assert client(req) == response_ok()
+
+
+def test_client_sending_request_with_wrong_method():
+    """Test error message when client sends wrong method request."""
+    from client import client
+    req = 'PUT /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80\r\n\r\n'
+    assert client(req) == b'HTTP/1.1 405 Method Not Allowed'

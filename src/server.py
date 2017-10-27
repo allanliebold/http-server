@@ -74,7 +74,7 @@ def response_ok():
 
 def response_error(status, reason):
     """Return a well formed error for the status passed."""
-    return b"HTTP/1.1 {} \n {} \r\n".format(status, reason)
+    return "HTTP/1.1 {} {}".format(status, reason).encode('utf-8')
 
 if __name__ == "__main__":
     """Run server."""
