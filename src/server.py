@@ -33,7 +33,8 @@ def server():
                 parse_request(whole_msg[:-3])
                 conn.sendall(response_ok())
             except ValueError as message:
-                conn.sendall(response_error(message[0], message[1]))
+                conn.sendall(response_error(message.args[0][0],
+                                            message.args[0][1]))
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -49,17 +50,17 @@ def parse_request(request):
     Otherwise, raise the appropriate exception.
     """
     request_by_crlf = request.split("\r\n")
-    if request_by_crlf[1][:5] is not "Host:":
+    if request_by_crlf[1][:5] != "Host:":
         raise ValueError([400, "Missing host header."])
-    elif request[-2:] is not "\r\n" or request.count("\r\n") < 3:
+    elif request[-2:] != "\r\n" or request.count("\r\n") < 3:
         raise ValueError([400, "Improperly Formed Request"])
 
     request_list = request.split()
 
-    if request_list[0] is not 'GET':
+    if request_list[0] != 'GET':
         raise ValueError([405, "Method Not Allowed"])
 
-    if request_list[2][:8] is not 'HTTP/1.1':
+    if request_list[2][:8] != 'HTTP/1.1':
         raise ValueError([505, "HTTP Version Not Supported"])
 
     """If no errors arise, return the request URI."""
