@@ -6,6 +6,7 @@ And send back a response.
 
 from __future__ import unicode_literals
 import sys
+import os
 import socket
 
 
@@ -33,7 +34,7 @@ def server():
             req = whole_msg[:-3]
             sys.stdout.write(req)
             try:
-                parse_request(req)
+                resolve_uri(parse_request(req))
                 conn.sendall(response_ok())
             except ValueError as message:
                 conn.sendall(response_error(message.args[0][0],
@@ -70,9 +71,33 @@ def parse_request(request):
     return request_list[1]
 
 
+def resolve_uri(uri_string):
+    """."""
+    response_content = [type, content]
+    uri_list = uri_string.split('/')
+    if uri_list[-1] and '.' in uri_list[-1]:
+        file_type = uri_string[-1].split('.')[1]
+        if file_type == 'txt':
+            file_type == 'text/plain'
+        elif file_type == 'jpeg':
+            file_type == 'image/jpeg'
+        elif file_type == 'png':
+            file_type == 'image/png'
+        elif file_type == 'html':
+            file_type == 'text/html'
+        else:
+            raise TypeError("File type not supported")
+    else:
+        ### uri is a directory - print as list
+
+    return response_content
+
+
 def response_ok():
     """Return a well formed HTTP 200 response."""
+    #### take the resolved uri data and type and build a respponse to send.
     return b"HTTP/1.1 200\nOK\r\n"
+### {}\r\nContent-Type: {}\r\n{}\r\n.format(resp_type, cont_type, cont_body).encode("utf-8")
 
 
 def response_error(status, reason):
