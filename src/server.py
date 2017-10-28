@@ -30,8 +30,10 @@ def server():
                 if whole_msg[-3:] == '@@@':
                     break
             print(whole_msg[:-3])
+            req = whole_msg[:-3]
+            sys.stdout.write(req)
             try:
-                parse_request(whole_msg[:-3])
+                parse_request(req)
                 conn.sendall(response_ok())
             except ValueError as message:
                 conn.sendall(response_error(message.args[0][0],
