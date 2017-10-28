@@ -36,7 +36,7 @@ def server():
             try:
                 resolve_uri(parse_request(req))
                 conn.sendall(response_ok())
-            except (FileNotFoundError, TypeError, ValueError) as message:
+            except (IOError, TypeError, ValueError) as message:
                 conn.sendall(response_error(message.args[0][0],
                                             message.args[0][1]))
             conn.close()
@@ -80,10 +80,11 @@ def resolve_uri(uri_string):
     response_content = ['', '']
     if uri_string[-1] == '/':
         uri_list = uri_string.split('/')[:-1]
-    else: 
+    else:
         uri_list = uri_string.split('/')
     print('../webroot' + uri_string.rstrip(uri_list[-1]))
-    if uri_list[-1] in os.listdir(os.path.abspath(__file__).rstrip('test.py') + 'webroot' + uri_string.rstrip(uri_list[-1])):
+    if uri_list[-1] in os.listdir(os.path.abspath(__file__).rstrip('test.py') +
+                                  'webroot' + uri_string.rstrip(uri_list[-1])):
 
         if uri_list[-1] and '.' in uri_list[-1]:
             file_type = uri_list[-1].split('.')[1]
@@ -98,7 +99,7 @@ def resolve_uri(uri_string):
                 response_content[0] = 'text/html'
             else:
                 raise TypeError([415, "Unsupported Media Type"])
-            
+
             response_content[1] = ''
 
         else:
@@ -111,7 +112,7 @@ def resolve_uri(uri_string):
                 response_content[1] += '</ul>'
 
     else:
-        raise FileNotFoundError([404, "File or Directory Not Found"])
+        raise IOError([404, "File or Directory Not Found"])
 
     ### if there is an existing file or directory: return response_content
     ### else: raise FileNotFoundError(404, 'File Not Found')
