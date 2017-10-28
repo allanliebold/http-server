@@ -56,6 +56,18 @@ def test_client_sending_request_with_wrong_method():
 def test_client_sending_request_with_wrong_formatting():
     """Test that when client sends wrongly formatted request, gets 400 error."""
     from client import client
-    from server import parse_request
     req = 'GET /path/to/index.html HTTP/1.1\r\nHost: www.mysite1.com:80\r\n'
     assert client(req) == "HTTP/1.1 400 Improperly Formed Request"
+
+
+def test_client_sending_request_with_wrong_http_version():
+    """Test that when client sends wrongly formatted request, gets 505 error."""
+    from client import client
+    req = 'GET /path/to/index.html HTTP/1.0\r\nHost: www.mysite1.com:80\r\n\r\n'
+    assert client(req) == "HTTP/1.1 505 HTTP Version Not Supported"
+
+
+def test_client_sending_proper_host_header_error():
+    from client import client
+    req = 'GET /path/to/index.html HTTP/1.0\r\nHost- www.mysite1.com:80\r\n\r\n'
+    assert client(req) == "HTTP/1.1 400 Missing host header."
