@@ -4,6 +4,7 @@
 And send back a response.
 """
 
+from __future__ import unicode_literals
 import sys
 import socket
 
@@ -29,14 +30,44 @@ def server():
                 if whole_msg[-3:] == '@@@':
                     break
             print(whole_msg[:-3])
-            conn.sendall(response_ok())
-            # conn.sendall(whole_msg.encode('utf-8'))
+            req = whole_msg[:-3]
+            sys.stdout.write(req)
+            try:
+                parse_request(req)
+                conn.sendall(response_ok())
+            except ValueError as message:
+                conn.sendall(response_error(message.args[0][0],
+                                            message.args[0][1]))
             conn.close()
     except KeyboardInterrupt:
-            conn.close()
-            server.close()
-            print('Server closed')
-            sys.exit()
+        conn.close()
+        server.close()
+        print('Server closed')
+        sys.exit()
+
+
+def parse_request(request):
+    """Parse Response function.
+
+    If passed a well-formed HTTP/1.1 GET request, return the request URI.
+    Otherwise, raise the appropriate exception.
+    """
+    request_by_crlf = request.split("\r\n")
+    if request_by_crlf[1][:5] != "Host:":
+        raise ValueError([400, "Missing host header."])
+    elif request[-2:] != "\r\n" or request.count("\r\n") < 3:
+        raise ValueError([400, "Improperly Formed Request"])
+
+    request_list = request.split()
+
+    if request_list[0] != 'GET':
+        raise ValueError([405, "Method Not Allowed"])
+
+    if request_list[2][:8] != 'HTTP/1.1':
+        raise ValueError([505, "HTTP Version Not Supported"])
+
+    """If no errors arise, return the request URI."""
+    return request_list[1]
 
 
 def response_ok():
@@ -44,10 +75,9 @@ def response_ok():
     return b"HTTP/1.1 200\nOK\r\n"
 
 
-def response_error():
-    """Return a well formed HTTP 500 server error."""
-    return b"HTTP/1.1 500\nInternal Server Error\r\n"
-
+def response_error(status, reason):
+    """Return a well formed error for the status passed."""
+    return "HTTP/1.1 {} {}".format(status, reason).encode('utf-8')
 
 if __name__ == "__main__":
     """Run server."""
