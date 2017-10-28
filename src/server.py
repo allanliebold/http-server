@@ -77,27 +77,48 @@ def resolve_uri(uri_string):
     Check if file or directory exists. If it does, return the type and content.
     Otherwise, raise an error.
     """
-    response_content = [type, content]
-    uri_list = uri_string.split('/')
-    if uri_list[-1] and '.' in uri_list[-1]:
-        file_type = uri_string[-1].split('.')[1]
-        if file_type == 'txt':
-            file_type == 'text/plain'
-        elif file_type == 'jpeg':
-            file_type == 'image/jpeg'
-        elif file_type == 'png':
-            file_type == 'image/png'
-        elif file_type == 'html':
-            file_type == 'text/html'
+    response_content = ['', '']
+    if uri_string[-1] == '/':
+        uri_list = uri_string.split('/')[:-1]
+    else: 
+        uri_list = uri_string.split('/')
+    print('../webroot' + uri_string.rstrip(uri_list[-1]))
+    if uri_list[-1] in os.listdir(os.path.abspath(__file__).rstrip('test.py') + 'webroot' + uri_string.rstrip(uri_list[-1])):
+
+        if uri_list[-1] and '.' in uri_list[-1]:
+            file_type = uri_list[-1].split('.')[1]
+            # check to see if filename exists.
+            if file_type == 'txt':
+                response_content[0] = 'text/plain'
+            elif file_type == 'jpeg':
+                response_content[0] = 'image/jpeg'
+            elif file_type == 'png':
+                response_content[0] = 'image/png'
+            elif file_type == 'html':
+                response_content[0] = 'text/html'
+            else:
+                raise TypeError([415, "Unsupported Media Type"])
+            
+            response_content[1] = ''
+
         else:
-            raise TypeError([415, "Unsupported Media Type"])
+            if os.isdir('../webroot' + uri_string):
+                file_type = 'text/directory'
+                dir_contents = os.listdir('../webrot' + uri_string)
+                response_content[1] = '<ul>'
+                for file in dir_contents:
+                    response_content[1] += '<li>{}</li>'.format(file)
+                response_content[1] += '</ul>'
+
     else:
-        ### uri is a directory - print as list. os.isdir(cwd + uri)
+        raise FileNotFoundError([404, "File or Directory Not Found"])
 
     ### if there is an existing file or directory: return response_content
     ### else: raise FileNotFoundError(404, 'File Not Found')
-
+    print(response_content)
     return response_content
+
+resolve_uri('/images/sample_1.png')
 
 
 def response_ok():
