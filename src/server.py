@@ -31,7 +31,6 @@ def server():
             req = whole_msg[:-3]
             sys.stdout.write(req)
             conn.sendall(response_ok())
-            # conn.sendall(whole_msg.encode('utf-8'))
             conn.close()
     except KeyboardInterrupt:
             conn.close()
