@@ -36,7 +36,7 @@ def server():
             try:
                 resolve_uri(parse_request(req))
                 conn.sendall(response_ok())
-            except ValueError as message:
+            except (FileNotFoundError, TypeError, ValueError) as message:
                 conn.sendall(response_error(message.args[0][0],
                                             message.args[0][1]))
             conn.close()
@@ -72,7 +72,11 @@ def parse_request(request):
 
 
 def resolve_uri(uri_string):
-    """."""
+    """Resolve URI passed in from a well-formed GET request.
+
+    Check if file or directory exists. If it does, return the type and content.
+    Otherwise, raise an error.
+    """
     response_content = [type, content]
     uri_list = uri_string.split('/')
     if uri_list[-1] and '.' in uri_list[-1]:
@@ -86,24 +90,27 @@ def resolve_uri(uri_string):
         elif file_type == 'html':
             file_type == 'text/html'
         else:
-            raise TypeError("File type not supported")
+            raise TypeError([415, "Unsupported Media Type"])
     else:
-        ### uri is a directory - print as list
+        ### uri is a directory - print as list. os.isdir(cwd + uri)
+
+    ### if there is an existing file or directory: return response_content
+    ### else: raise FileNotFoundError(404, 'File Not Found')
 
     return response_content
 
 
 def response_ok():
-    """Return a well formed HTTP 200 response."""
+    """Return a well-formed HTTP 200 response."""
     #### take the resolved uri data and type and build a respponse to send.
     return b"HTTP/1.1 200\nOK\r\n"
 ### {}\r\nContent-Type: {}\r\n{}\r\n.format(resp_type, cont_type, cont_body).encode("utf-8")
 
 
 def response_error(status, reason):
-    """Return a well formed error for the status passed."""
+    """Return a well-formed error for the status passed."""
     return "HTTP/1.1 {} {}".format(status, reason).encode('utf-8')
 
 if __name__ == "__main__":
-    """Run server."""
+    """Run server from the command line."""
     server()
