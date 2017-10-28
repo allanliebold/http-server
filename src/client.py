@@ -2,6 +2,7 @@
 """Create a client socket to interact with a server socket."""
 
 
+from __future__ import unicode_literals
 import sys
 import socket
 
