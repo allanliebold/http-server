@@ -6,6 +6,8 @@ To verify proper operation of server and client sockets.
 from __future__ import unicode_literals
 import pytest
 
+# Server side testing follows:
+
 
 def test_parse_request_valid_input():
     """That that a valid request returns the URI."""
@@ -36,6 +38,59 @@ def test_parse_request_missing_host_header():
     req = 'GET /path/to/index.html HTTP/1.1\r\nHost /sample.txt\r\n\r\n'
     with pytest.raises(ValueError):
         parse_request(req)
+
+
+def test_resolve_uri_works_with_txt():
+    """Test proper response with txt file."""
+    from server import resolve_uri
+    assert resolve_uri('/sample.txt')[0] == 'text/plain'
+
+
+def test_resolve_uri_works_with_png():
+    """Test proper URI resolution with PNG file."""
+    from server import resolve_uri
+    assert resolve_uri('/images/sample_1.png')[0] == 'image/png'
+
+
+def test_resolve_uri_works_with_jpg():
+    """Test proper URI resolution with jpeg file."""
+    from server import resolve_uri
+    assert resolve_uri('/images/JPEG_example.jpg')[0] == 'image/jpeg'
+
+
+def test_resolve_uri_works_with_html():
+    """Test proper URI resolution with html file."""
+    from server import resolve_uri
+    assert resolve_uri('/a_web_page.html')[0] == 'text/html'
+
+
+def test_resolve_uri_works_with_python_file():
+    """Test proper URI resolution with .py file."""
+    from server import resolve_uri
+    assert resolve_uri('/make_time.py')[0] == 'text/plain'
+
+
+def test_resolve_uri_works_with_directory():
+    """Test proper URI resolution with directory input."""
+    from server import resolve_uri
+    assert resolve_uri('/images')[0] == 'text/directory'
+
+
+def test_resolve_uri_raises_415():
+    """Test unsupported file type raises 415 error."""
+    from server import resolve_uri
+    with pytest.raises(TypeError):
+        resolve_uri('/images/sample.bmp')
+
+
+def test_resolve_uri_raises_404():
+    """Test bad directory raises 404 error."""
+    from server import resolve_uri
+    with pytest.raises(IOError):
+        resolve_uri('/your_mom')
+
+
+# Client side testing follows:
 
 
 def test_client_sending_valid_request():
@@ -78,7 +133,7 @@ def test_client_requests_unsupported_file_type():
 def test_client_requests_file_not_in_directory():
     """."""
     from client import client
-    assert client('your_mom') == "HTTP/1.1 404 File or Directory Not Found"
+    assert client('your_mom') == "HTTP/1.1 404 File or Directory Not Found" 
 
 
 # def test_client_sending_request_with_wrong_formatting():

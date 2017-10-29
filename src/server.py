@@ -81,10 +81,10 @@ def resolve_uri(uri_string):
     if uri_string[-1] == '/':
         uri_string = uri_string[:-1]
     uri_list = uri_string.split('/')
-    file_name = (os.path.abspath(__file__).rstrip('server.py') +
+    file_name = (os.path.abspath(__file__)[:-9] +
                  'webroot' + uri_string)
 
-    if uri_list[-1] in os.listdir(file_name.rstrip(uri_list[-1])):
+    if uri_list[-1] in os.listdir(file_name[:-(1 + len(uri_list[-1]))]):
 
         if uri_list[-1] and '.' in uri_list[-1]:
             file_type = uri_list[-1].split('.')[1]
@@ -132,6 +132,6 @@ def response_error(status, reason):
     """Return a well-formed error for the status passed."""
     return "HTTP/1.1 {} {}".format(status, reason).encode('utf-8')
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     """Run server from the command line."""
     server()
