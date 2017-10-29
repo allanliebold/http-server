@@ -10,7 +10,7 @@ import os
 import socket
 
 
-def server():
+def server():  # pragma: no cover
     """Build a server to rece/ive from client and respond."""
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,

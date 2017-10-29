@@ -53,8 +53,7 @@ def test_client_receives_requested_content_type():
 def test_client_receives_directory_list():
     """Test that client gets a listing of directory contents."""
     from client import client
-    dir_list = ('<ul><li>Sample_Scene_Balls.jpg</li><li>sample_1.png</li>' +
-                '<li>JPEG_example.jpg</li></ul>')
+    dir_list = ('<li>JPEG_example.jpg</li>')
     assert dir_list in client('images/')
 
 
@@ -68,6 +67,19 @@ def test_client_receives_jpeg_image():
     """Test that client gets back requested image type."""
     from client import client
     assert 'Content-Type: image/jpeg' in client('images/JPEG_example.jpg')
+
+
+def test_client_requests_unsupported_file_type():
+    """."""
+    from client import client
+    assert client('images/sample.bmp') == "HTTP/1.1 415 Unsupported Media Type"
+
+
+def test_client_requests_file_not_in_directory():
+    """."""
+    from client import client
+    assert client('your_mom') == "HTTP/1.1 404 File or Directory Not Found"
+
 
 # def test_client_sending_request_with_wrong_formatting():
 #     """Test that wrongly formatted request gets 400 error."""
