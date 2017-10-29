@@ -80,15 +80,19 @@ def resolve_uri(uri_string):
     response_content = ['', '']
     if uri_string[-1] == '/':
         uri_string = uri_string[:-1]
-    uri_list = uri_string.split('/')
-    file_name = (os.path.abspath(__file__)[:-9] +
-                 'webroot' + uri_string)
-
-    if uri_list[-1] in os.listdir(file_name[:-(1 + len(uri_list[-1]))]):
-
-        if uri_list[-1] and '.' in uri_list[-1]:
-            file_type = uri_list[-1].split('.')[1]
-            # check to see if filename exists.
+    file_path = os.path.dirname(os.path.realpath(__file__)) + '/webroot'\
+        + uri_string
+    uri_list = os.path.split(file_path)
+    if os.path.isdir(file_path):
+        response_content[0] = 'text/directory'
+        dir_contents = os.listdir(file_path)
+        response_content[1] = '<ul>'
+        for file in dir_contents:
+            response_content[1] += '<li>{}</li>'.format(file)
+        response_content[1] += '</ul>'
+    elif uri_list[1] in os.listdir(uri_list[0]):
+        if uri_list[1] and '.' in uri_list[1]:
+            file_type = uri_list[1].split('.')[1]
             if file_type == 'txt' or file_type == 'py':
                 response_content[0] = 'text/plain'
             elif file_type == 'jpg':
@@ -99,18 +103,9 @@ def resolve_uri(uri_string):
                 response_content[0] = 'text/html'
             else:
                 raise TypeError([415, "Unsupported Media Type"])
-            fp = open(file_name, 'rb')
+            fp = open(file_path, 'rb')
             response_content[1] = fp.read()
             fp.close()
-
-        else:
-            if os.path.isdir(file_name):
-                response_content[0] = 'text/directory'
-                dir_contents = os.listdir(file_name)
-                response_content[1] = '<ul>'
-                for file in dir_contents:
-                    response_content[1] += '<li>{}</li>'.format(file)
-                response_content[1] += '</ul>'
     else:
         raise IOError([404, "File or Directory Not Found"])
 
