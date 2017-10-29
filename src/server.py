@@ -34,8 +34,8 @@ def server():
             req = whole_msg[:-3]
             sys.stdout.write(req)
             try:
-                resolve_uri(parse_request(req))
-                conn.sendall(response_ok())
+                parsed_uri_info = resolve_uri(parse_request(req))
+                conn.sendall(response_ok(parsed_uri_info))
             except (IOError, TypeError, ValueError) as message:
                 conn.sendall(response_error(message.args[0][0],
                                             message.args[0][1]))
@@ -72,24 +72,25 @@ def parse_request(request):
 
 
 def resolve_uri(uri_string):
+
     """Resolve URI passed in from a well-formed GET request.
 
     Check if file or directory exists. If it does, return the type and content.
     Otherwise, raise an error.
     """
     response_content = ['', '']
+    file_name = (os.path.abspath(__file__)
+                        .rstrip('test.py') + 'webroot' + uri_string)
     if uri_string[-1] == '/':
         uri_list = uri_string.split('/')[:-1]
     else:
         uri_list = uri_string.split('/')
-    print('../webroot' + uri_string.rstrip(uri_list[-1]))
-    if uri_list[-1] in os.listdir(os.path.abspath(__file__).rstrip('test.py') +
-                                  'webroot' + uri_string.rstrip(uri_list[-1])):
+    if uri_list[-1] in os.listdir(file_name.rstrip(uri_list[-1])):
 
         if uri_list[-1] and '.' in uri_list[-1]:
             file_type = uri_list[-1].split('.')[1]
             # check to see if filename exists.
-            if file_type == 'txt':
+            if file_type == 'txt' or file_type == 'py':
                 response_content[0] = 'text/plain'
             elif file_type == 'jpeg':
                 response_content[0] = 'image/jpeg'
@@ -99,34 +100,29 @@ def resolve_uri(uri_string):
                 response_content[0] = 'text/html'
             else:
                 raise TypeError([415, "Unsupported Media Type"])
-
-            response_content[1] = ''
+            fp = open(file_name, 'rb')
+            response_content[1] = fp.read()
+            fp.close()
 
         else:
-            if os.isdir('../webroot' + uri_string):
-                file_type = 'text/directory'
-                dir_contents = os.listdir('../webrot' + uri_string)
+            if os.path.isdir(file_name):
+                response_content[0] = 'text/directory'
+                dir_contents = os.listdir(file_name)
                 response_content[1] = '<ul>'
                 for file in dir_contents:
                     response_content[1] += '<li>{}</li>'.format(file)
                 response_content[1] += '</ul>'
-
     else:
         raise IOError([404, "File or Directory Not Found"])
 
-    ### if there is an existing file or directory: return response_content
-    ### else: raise FileNotFoundError(404, 'File Not Found')
-    print(response_content)
     return response_content
 
-resolve_uri('/images/sample_1.png')
-
-
-def response_ok():
+def response_ok(potato):
     """Return a well-formed HTTP 200 response."""
-    #### take the resolved uri data and type and build a respponse to send.
-    return b"HTTP/1.1 200\nOK\r\n"
-### {}\r\nContent-Type: {}\r\n{}\r\n.format(resp_type, cont_type, cont_body).encode("utf-8")
+    resp_head = 'HTTP/1.1 200 OK\r\n'
+    return '{}Content-Type: {}\r\n\r\n{}\r\n'.format(resp_head,
+                                                     potato[0],
+                                                     potato[1]).encode("utf-8")
 
 
 def response_error(status, reason):
