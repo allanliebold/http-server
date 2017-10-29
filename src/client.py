@@ -7,13 +7,13 @@ import sys
 import socket
 
 
-def client(message):
+def client(req):
     """Instantiate a client socket that sends a message."""
-    infos = socket.getaddrinfo('127.0.0.1', 6667)
+    infos = socket.getaddrinfo('127.0.0.1', 6666)
     stream_info = [i for i in infos if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     client.connect(stream_info[-1])
-    message += '@@@'
+    message = 'GET /{} HTTP/1.1\r\nHost: address.com:80\r\n\r\n@@@'.format(req)
     if hasattr('', 'encode'):
         client.sendall(message.encode('utf8'))
     else:

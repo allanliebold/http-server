@@ -15,7 +15,7 @@ def server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 6667)
+    address = ('127.0.0.1', 6666)
     server.bind(address)
     server.listen(1)
     listening = True
@@ -72,19 +72,18 @@ def parse_request(request):
 
 
 def resolve_uri(uri_string):
-
     """Resolve URI passed in from a well-formed GET request.
 
     Check if file or directory exists. If it does, return the type and content.
     Otherwise, raise an error.
     """
     response_content = ['', '']
-    file_name = (os.path.abspath(__file__)
-                        .rstrip('test.py') + 'webroot' + uri_string)
     if uri_string[-1] == '/':
-        uri_list = uri_string.split('/')[:-1]
-    else:
-        uri_list = uri_string.split('/')
+        uri_string = uri_string[:-1]
+    uri_list = uri_string.split('/')
+    file_name = (os.path.abspath(__file__).rstrip('server.py') +
+                 'webroot' + uri_string)
+
     if uri_list[-1] in os.listdir(file_name.rstrip(uri_list[-1])):
 
         if uri_list[-1] and '.' in uri_list[-1]:
@@ -92,7 +91,7 @@ def resolve_uri(uri_string):
             # check to see if filename exists.
             if file_type == 'txt' or file_type == 'py':
                 response_content[0] = 'text/plain'
-            elif file_type == 'jpeg':
+            elif file_type == 'jpg':
                 response_content[0] = 'image/jpeg'
             elif file_type == 'png':
                 response_content[0] = 'image/png'
@@ -117,8 +116,12 @@ def resolve_uri(uri_string):
 
     return response_content
 
+
 def response_ok(potato):
-    """Return a well-formed HTTP 200 response."""
+    """Return a well-formed HTTP 200 response.
+
+    Accepts resolved URI with content type and body to add to the response.
+    """
     resp_head = 'HTTP/1.1 200 OK\r\n'
     return '{}Content-Type: {}\r\n\r\n{}\r\n'.format(resp_head,
                                                      potato[0],
