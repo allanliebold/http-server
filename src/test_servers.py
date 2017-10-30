@@ -133,7 +133,7 @@ def test_client_requests_unsupported_file_type():
 def test_client_requests_file_not_in_directory():
     """."""
     from client import client
-    assert client('your_mom') == "HTTP/1.1 404 File or Directory Not Found" 
+    assert client('your_mom') == "HTTP/1.1 404 File or Directory Not Found"
 
 
 # def test_client_sending_request_with_wrong_formatting():

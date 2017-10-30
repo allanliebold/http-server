@@ -7,7 +7,6 @@ And send back a response.
 from __future__ import unicode_literals
 import sys
 import os
-import socket
 
 
 def echo(socket, address):
@@ -15,12 +14,11 @@ def echo(socket, address):
     listening = True
     try:
         while listening:
-            conn, addr = server.accept()
             buffer_length = 8
             message_complete = False
             whole_msg = ''
             while not message_complete:
-                part = conn.recv(buffer_length)
+                part = socket.recv(buffer_length)
                 whole_msg += part.decode('utf-8')
                 if whole_msg[-3:] == '@@@':
                     break
@@ -29,13 +27,13 @@ def echo(socket, address):
             sys.stdout.write(req)
             try:
                 parsed_uri_info = resolve_uri(parse_request(req))
-                conn.sendall(response_ok(parsed_uri_info))
+                socket.sendall(response_ok(parsed_uri_info))
             except (IOError, TypeError, ValueError) as message:
-                conn.sendall(response_error(message.args[0][0],
-                                            message.args[0][1]))
-            conn.close()
+                socket.sendall(response_error(message.args[0][0],
+                                              message.args[0][1]))
+            socket.close()
     except KeyboardInterrupt:
-        conn.close()
+        socket.close()
         server.close()
         print('Server closed')
         sys.exit()
