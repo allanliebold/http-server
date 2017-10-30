@@ -10,14 +10,8 @@ import os
 import socket
 
 
-def server():  # pragma: no cover
-    """Build a server to rece/ive from client and respond."""
-    server = socket.socket(socket.AF_INET,
-                           socket.SOCK_STREAM,
-                           socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 6666)
-    server.bind(address)
-    server.listen(1)
+def echo(socket, address):
+    """Echo function."""
     listening = True
     try:
         while listening:
@@ -127,6 +121,12 @@ def response_error(status, reason):
     """Return a well-formed error for the status passed."""
     return "HTTP/1.1 {} {}".format(status, reason).encode('utf-8')
 
+
 if __name__ == "__main__":  # pragma: no cover
     """Run server from the command line."""
-    server()
+    from gevent.server import StreamServer
+    from gevent.monkey import patch_all
+    patch_all()
+    server = StreamServer(('127.0.0.1', 6666), echo)
+    print('Starting echo server on port 6666')
+    server.serve_forever()
